@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react'
-import { supabase } from "@/supabase"
+import { createClient } from '@/utils/supabase/client';
 import { useForm } from 'react-hook-form';
 
 export interface IEmailLogin {
@@ -10,6 +10,7 @@ export interface IEmailLogin {
 }
 
 export default function SignIn() {
+  const supabase = createClient();
   const [loading, setLoading] = useState<boolean>(false);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<IEmailLogin>();
@@ -20,16 +21,20 @@ export default function SignIn() {
     setLoading(false);
   })
 
+  // TODO: change this to sign up
   const signInWithGoogle = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: "http://localhost:3000/new-member"
+      }
     });
   };
 
   return (
     // TODO: input text is white for some reason. change that.
     <div>
-      <h2>Sign in</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={onSubmit}
       className="flex flex-col">
         <label htmlFor="emailInput">Email</label>
@@ -66,7 +71,7 @@ export default function SignIn() {
         })} />
         {errors.confirmPass ? <p>{errors.confirmPass.message}</p> : null}
 
-        <button type="submit">Login with Email</button>
+        <button type="submit">Sign up with Email</button>
       </form>
       <div className="px-6 sm:px-0 max-w-sm">
       <button
