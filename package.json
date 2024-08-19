@@ -13,9 +13,11 @@
     "@supabase/supabase-js": "^2.45.0",
     "next": "14.2.5",
     "react": "^18",
+    "react-cookie": "^7.2.0",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
-    "react-hot-toast": "^2.4.1"
+    "react-hot-toast": "^2.4.1",
+    "use-debounce": "^10.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
