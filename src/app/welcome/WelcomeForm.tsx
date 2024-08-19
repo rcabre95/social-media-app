@@ -16,6 +16,7 @@ interface WelcomeForm {
   username: string;
   headline?: string;
   summary?: string;
+  subdirectory?: string;
 }
 
 export default function WelcomeForm({ user }: { user: any }) {
