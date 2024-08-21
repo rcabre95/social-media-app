@@ -12,3 +12,4 @@ export default function Home() {
 // TODO: admin panel
 // TODO: Project pages
 // TODO: Feed
+// TODO: figure out profile photos, background photos, and buckets in general
