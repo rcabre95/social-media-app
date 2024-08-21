@@ -8,3 +8,7 @@ export default function Home() {
     </main>
   );
 }
+
+// TODO: admin panel
+// TODO: Project pages
+// TODO: Feed
