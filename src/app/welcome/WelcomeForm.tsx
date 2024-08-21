@@ -52,11 +52,13 @@ export default function WelcomeForm({ user }: { user: any }) {
           user_id: user.id,
           headline: data.headline,
           summary: data.summary,
+          // photo: ,
           theme: "default",
           first_name: data.fName,
           middle_name: data.mName || null,
           last_name: data.lName,
           subdirectory: data.username
+          
         });
       if (error) {
         toast.error(error.message);

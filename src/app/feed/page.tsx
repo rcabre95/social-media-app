@@ -1,33 +1,36 @@
+'use server';
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import Nav from "@/components/shared/Nav";
+import Feed from './Feed'
 
-export default async function Feed() {
+export default async function FeedPage() {
   const cookieStore = cookies();
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   console.log(user)
 
+  async function cookieSet(name: string, data: string) {
+    'use server'
+    cookies().set(name, data)
+  }
+
 
   if (user) {
     if (cookieStore.has('hasProfile')) {
-      return (
-        <div>
-          <Nav loggedIn={true} />
-          Feed
-        </div>
-      )
-    } else {
       const { data, error } = await supabase.from('profiles').select('id').eq('user_id', user.id);
       if (data && data.length > 0) {
-        cookieStore.set('hasProfile', data[0].id)
         return (
-          <div>
-            <Nav loggedIn={true} />
-            FEED
-          </div>
+          <Feed profile={data[0]} />
+        )
+      }
+    } else {
+      // TODO: handle errors (error variable)
+      const { data, error } = await supabase.from('profiles').select('id').eq('user_id', user.id);
+      if (data && data.length > 0) {
+        return (
+          <Feed onLoad={cookieSet} name={'hasProfile'} profile={data[0]} />
         )
       } else {
         redirect('/welcome');
