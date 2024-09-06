@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import Feed from './Feed'
 
+// TODO: create context for user
+
 export default async function FeedPage() {
   const cookieStore = cookies();
   const supabase = createClient();
@@ -22,7 +24,7 @@ export default async function FeedPage() {
       const { data, error } = await supabase.from('profiles').select('id').eq('user_id', user.id);
       if (data && data.length > 0) {
         return (
-          <Feed profile={data[0]} />
+          <Feed userId={user.id} profile={data[0]} />
         )
       }
     } else {
@@ -30,7 +32,7 @@ export default async function FeedPage() {
       const { data, error } = await supabase.from('profiles').select('id').eq('user_id', user.id);
       if (data && data.length > 0) {
         return (
-          <Feed onLoad={cookieSet} name={'hasProfile'} profile={data[0]} />
+          <Feed userId={user.id} onLoad={cookieSet} name={'hasProfile'} profile={data[0]} />
         )
       } else {
         redirect('/welcome');
