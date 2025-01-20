@@ -19,7 +19,7 @@ export default async function Welcome() {
   const { data: { user } } = await supabase.auth.getUser();
   const cookieStore = cookies();
   if (cookieStore.has('hasProfile')) {
-    redirect('/profile')
+    redirect('/feed')
   }
 
   return (

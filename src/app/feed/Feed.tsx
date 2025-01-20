@@ -26,7 +26,7 @@ export default function Feed({ userId, profile, onLoad, name }: { userId: string
 
   return ( // TODO: figure out where to put Nav
     <main>
-    <Nav loggedIn={true}/>
+    <Nav loggedIn={true} />
     <div>Feed</div>
     <button onClick={toggleNewPost} type="button">{!showNewPostForm ? "New Post" : "Cancel"}</button>
     <button onClick={toggleNewProject} type="button">{!showNewProjectForm ? "New Project" : "Cancel"}</button>

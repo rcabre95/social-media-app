@@ -8,39 +8,70 @@ interface IPostInsert {
   content: string;
   title: string;
   media: FileList;
-  project: string | null;
+  profile_id: number;
+  project_id: string | null;
 }
 
-export default function NewPostForm({ userId, profileId, setShowNewPostForm }: { userId: string, profileId: number, setShowNewPostForm: Dispatch<SetStateAction<boolean>> }) {
+export default function NewPostForm({ userId, project, profileId, setShowNewPostForm }: { userId: string, project?: string, profileId: number, setShowNewPostForm: Dispatch<SetStateAction<boolean>> }) {
+
   const [loading, setLoading] = useState<boolean>(false);
   const supabase = createClient();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid }
-  } = useForm<IPostInsert>();
+  } = useForm<IPostInsert>({
+    defaultValues: {
+      project_id: project ? project : null,
+    }
+  });
 
   const onSubmit: SubmitHandler<IPostInsert> = async (data) => {
     // TODO: finish onSubmit
     setLoading(true);
     console.log(data);
-    // check if project is filled out or not
-    if (!data.project) {
-      // if not filled out, continue as normal
+    const fileListAsArray = Array.from(data.media);
+    let media: Array<string> = fileListAsArray.map((file) => {
+      return `${userId}/${profileId}-${file.name}`
+    })
+    
+    
+    const post =  await supabase.from('posts').insert({
+      user_id: userId,
+      content: data.content,
+      title: data.title,
+      media: media,
+      profile_id: profileId,
+      project_id: data.project_id
+    }).select();
+    
+    if (!post.error) {
+      for (let i = 0; i < fileListAsArray.length; i++) {
+        console.log(`${userId}/${profileId}-${fileListAsArray[i].name}`)
+        let thisUpload = await supabase.storage.from('posts').upload(`${userId}/${profileId}-${fileListAsArray[i].name}`, data.media[i], {
+          cacheControl: '3600',
+          upsert: false
+        })
+        if (thisUpload.error) {
+          toast.error(thisUpload.error.message);
+          console.log("Upload Error:" + JSON.stringify(thisUpload.error.message));
+          setShowNewPostForm(false);
+
+          break;
+        }
+      }
+      // var upload = await supabase.storage.from('posts').upload(`${userId}/${profileId}-${post.data[0].name}`, data.media[0]);
+      // if (upload.error) {
+      //   toast.error(upload.error.message );
+      // } else {
+      //   console.log(`Upload Error: ${JSON.stringify(upload.error)}`)
+      //   setShowNewPostForm(false);
+      // }
     } else {
-      // if filled out, check if project exists (or don't?)
-    }
-    // const { error } =  await supabase.from('posts').insert({
-    //   user_id: userId,
-    //   content: data.content,
-    //   title: data.title,
-    //   media: data.media[0].name
-    // });
-    // if (error) {
-    //   toast.error(error.message);
-    // } else {
-    //   setShowNewPostForm(false);
-    // }
+      console.log(`Post Error: ${JSON.stringify(post.error.message)}`)
+      toast.error(post.error.message);
+    };
+
     setLoading(false);
   }
 
@@ -69,8 +100,8 @@ export default function NewPostForm({ userId, profileId, setShowNewPostForm }: {
           // TODO: figure out file inputs
         })}/>
 
-        <label htmlFor="projectInput">Project Collab</label>
-        <input id="projectInput" type="text" {...register("project", {
+        <label aria-hidden={true} className='hidden' htmlFor="projectInput">Project Collab</label>
+        <input aria-hidden={true} className='hidden' id="projectInput" type="text" {...register("project_id", {
 
         })} />
 
